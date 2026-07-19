@@ -5,4 +5,3 @@ class Student(BaseModel):
     age: int
     email: str
     course: str
-

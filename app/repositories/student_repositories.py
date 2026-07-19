@@ -42,7 +42,6 @@ def create_student(student_data: dict):
 def update_student(student_id: int, updated_data: dict):
 
     student = get_student_by_id(student_id)
-
     if student:
         student.update(updated_data)
         return student
@@ -57,5 +56,4 @@ def delete_student(student_id: int):
         return True
 
     return False
-
 # repository layer  = data access = - find / create/ update/ delete
