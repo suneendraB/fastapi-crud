@@ -1,59 +1,79 @@
-students = [
-    {
-        "id":1,
-        "name": "Rahul",
-        "email": "rahul@gmail.com",
-        "age" : 21,
-        "course" : "Mechanical"
-    },
-    {
-        "id": 2,
-        "name": "Ravi",
-        "email": "ravi@gmail.com",
-        "age": 25,
-        "course": "Robotics"
-    },
-    {
-        "id":3,
-        "name": "Suneendra",
-        "age":28,
-        "email":"suneendrabsa@gmail.com",
-        "course":"Backend Engineering"
-    }
-]
-
+from app.database import SessionLocal
+from app.models.student import Student
 
 def get_all_students():
+
+    db = SessionLocal()
+
+    students = db.query(Student).all()
+
+    db.close()
+
     return students
 
-
 def get_student_by_id(student_id: int):
-    for student in students:
-        if student["id"] == student_id:
-            return student
-    return None
+
+    db = SessionLocal()
+
+    student = db.query(Student).filter(Student.id == student_id).first()
+
+    db.close()
+
+    return student
 
 def create_student(student_data: dict):
-    student_data["id"] = len(students) + 1
-    students.append(student_data)
-    return student_data
+    db = SessionLocal()
+
+    db_student = Student(**student_data)
+
+    db.add(db_student)
+
+    db.commit()
+
+    db.refresh(db_student)
+
+    db.close()
+
+    return db_student
 
 
 def update_student(student_id: int, updated_data: dict):
 
-    student = get_student_by_id(student_id)
-    if student:
-        student.update(updated_data)
-        return student
+    db = SessionLocal()
 
-    return None
+    student = (
+        db.query(Student)
+        .filter(Student.id == student_id)
+        .first()
+    )
+
+    if student:
+
+        for key, value in updated_data.items():
+            setattr(student, key, value)
+
+        db.commit()
+
+        db.refresh(student)
+
+    db.close()
+
+    return student
+
 
 def delete_student(student_id: int):
-    student = get_student_by_id(student_id)
+
+    db = SessionLocal()
+
+    student = (db.query(Student).filter(Student.id == student_id).first())
 
     if student:
-        students.remove(student)
-        return True
+        db.delete(student)
+        db.commit()
 
-    return False
+    db.close()
+
+    return student is not None
+
+
 # repository layer  = data access = - find / create/ update/ delete
