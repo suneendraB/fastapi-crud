@@ -1,45 +1,23 @@
-from app.database import SessionLocal
+from sqlalchemy.orm import Session
 from app.models.student import Student
 
-def get_all_students():
+def get_all_students(db: Session):
+    return db.query(Student).all()
 
-    db = SessionLocal()
+def get_student_by_id(db:Session, student_id: int):
+    return (
+        db.query(Student)
+        .filter(Student.id == student_id)
+        .first())
 
-    students = db.query(Student).all()
-
-    db.close()
-
-    return students
-
-def get_student_by_id(student_id: int):
-
-    db = SessionLocal()
-
-    student = db.query(Student).filter(Student.id == student_id).first()
-
-    db.close()
-
-    return student
-
-def create_student(student_data: dict):
-    db = SessionLocal()
-
+def create_student(db: Session, student_data: dict):
     db_student = Student(**student_data)
-
     db.add(db_student)
-
     db.commit()
-
     db.refresh(db_student)
-
-    db.close()
-
     return db_student
 
-
-def update_student(student_id: int, updated_data: dict):
-
-    db = SessionLocal()
+def update_student(db:Session, student_id: int, updated_data: dict):
 
     student = (
         db.query(Student)
@@ -56,22 +34,20 @@ def update_student(student_id: int, updated_data: dict):
 
         db.refresh(student)
 
-    db.close()
-
     return student
 
 
-def delete_student(student_id: int):
+def delete_student(db,student_id: int):
 
-    db = SessionLocal()
-
-    student = (db.query(Student).filter(Student.id == student_id).first())
+    student = (
+        db.query(Student)
+        .filter(Student.id == student_id)
+        .first()
+    )
 
     if student:
         db.delete(student)
         db.commit()
-
-    db.close()
 
     return student is not None
 
