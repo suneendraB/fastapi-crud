@@ -1,18 +1,25 @@
 from fastapi import APIRouter, HTTPException, Response,status, Depends
 from sqlalchemy.orm import Session
 
-from app.schemas.student import Student
+from app.schemas.student import StudentCreate, StudentUpdate, StudentResponse
 from app.services import student_service
 from app.dependencies import get_db
 
 router = APIRouter()
 
-@router.get("/students")
+@router.get("/students",
+            response_model=list[StudentResponse]
+            )
 def get_students(db: Session = Depends(get_db)):
     return student_service.get_all_students(db)
 
-@router.get("/students/{student_id}")
-def get_student(student_id: int, db: Session = Depends(get_db)):
+@router.get(
+    "/students/{student_id}",
+    response_model=StudentResponse
+)
+def get_student(student_id: int,
+                db: Session = Depends(get_db)
+                ):
     student = student_service.get_student_by_id(db, student_id)
 
     if student is None:
@@ -23,14 +30,27 @@ def get_student(student_id: int, db: Session = Depends(get_db)):
 # {student_id} = path parameter
 # student_id: int = validator - for same datatype
 
-@router.post("/students")
-def create_student_api(student: Student, db: Session = Depends(get_db)):
-    return student_service.create_student(db, student.model_dump())
+@router.post("/students",
+             response_model=StudentResponse,
+             status_code=status.HTTP_201_CREATED
+             )
+def create_student_api(
+        student: StudentCreate,
+        db: Session = Depends(get_db)
+):
+    return student_service.create_student(
+        db,
+        student.model_dump()
+    )
 
-@router.put("/students/{student_id}")
+@router.put(
+    "/students/{student_id}",
+    response_model=StudentResponse
+    )
 def update_student_api(student_id: int,
-                       updated_student: Student,
-                       db: Session = Depends(get_db)):
+                       updated_student: StudentUpdate,
+                       db: Session = Depends(get_db)
+                       ):
     student = student_service.update_student(
         db,
         student_id,

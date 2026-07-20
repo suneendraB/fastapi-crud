@@ -6,7 +6,6 @@ Repository later = data access responsibility = Find, create, Update, Delete fro
 """
 
 from app.repositories import student_repositories
-from app.schemas.student import Student
 
 
 def get_all_students(db):
