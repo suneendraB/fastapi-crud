@@ -1,10 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 
 class StudentBase(BaseModel):
-    name: str
-    age: int
-    email: str
-    course: str
+    name: str = Field(min_length=3, max_length=100)
+    age: int = Field(gt=0, lt=120)
+    email: EmailStr
+    course: str = Field(min_length=2)
 
 
 class StudentCreate(StudentBase):
