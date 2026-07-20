@@ -8,8 +8,23 @@ Repository later = data access responsibility = Find, create, Update, Delete fro
 from app.repositories import student_repositories
 
 
-def get_all_students(db):
-    return student_repositories.get_all_students(db)
+def get_all_students(db,
+                     course = None,
+                     age = None,
+                     search = None,
+                     sort = None,
+                     page = 1,
+                     size = 5
+                     ):
+    return student_repositories.get_all_students(
+        db,
+        course,
+        age,
+        search,
+        sort,
+        page,
+        size
+    )
 
 
 def get_student_by_id(db,student_id: int):

@@ -10,8 +10,24 @@ router = APIRouter()
 @router.get("/students",
             response_model=list[StudentResponse]
             )
-def get_students(db: Session = Depends(get_db)):
-    return student_service.get_all_students(db)
+def get_students(
+        course: str | None = None,
+        age: int | None = None,
+        search: str | None = None,
+        sort: str | None = None,
+        page: int = 1,
+        size: int = 5,
+        db: Session = Depends(get_db)
+):
+    return student_service.get_all_students(
+        db,
+        course,
+        age,
+        search,
+        sort,
+        page,
+        size
+    )
 
 @router.get(
     "/students/{student_id}",

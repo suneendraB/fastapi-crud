@@ -1,8 +1,45 @@
 from sqlalchemy.orm import Session
 from app.models.student import Student
+from sqlalchemy import desc
 
-def get_all_students(db: Session):
-    return db.query(Student).all()
+def get_all_students(db: Session,
+                     course: str | None = None,
+                     age: int | None = None,
+                     search: str | None = None,
+                     sort: str | None = None,
+                     page: int = 1,
+                     size: int = 5
+                     ):
+    query = db.query(Student)
+
+    # Filtering
+
+    if course:
+        query = query.filter(Student.course == course)
+
+    if age is not None:
+        query = query.filter(Student.age == age)
+
+    # searching
+    if search:
+        query = query.filter(
+            Student.name.ilike(f"%{search}%")
+                             )
+
+    #sorting
+    if sort == "age":
+        query = query.order_by(Student.age)
+
+    elif sort == "-age":
+        query = query.order_by(desc(Student.age))
+
+    # Pagination
+
+    offset = (page - 1 ) * size
+
+    query = query.offset(offset).limit(size)
+
+    return query.all()
 
 def get_student_by_id(db:Session, student_id: int):
     return (
